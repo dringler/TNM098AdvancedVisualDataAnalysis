@@ -1,0 +1,6 @@
+SELECT id FROM friday
+UNION
+SELECT id FROM saturday
+UNION
+SELECT id FROM sunday
+ORDER BY id ASC
