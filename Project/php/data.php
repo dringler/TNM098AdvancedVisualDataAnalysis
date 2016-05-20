@@ -13,13 +13,28 @@
     $day = $_GET['day'];
     $limit = $_GET['limit'];
     $offset = $_GET['offset'];
+    $allIDsChecked = $_GET['allIDsChecked'];
+    $selectedID = (int)$_GET['selectedID'];
 
-    $myquery = "
-        SELECT  Timestamp, id, type, X, Y
-        FROM  $day
-        ORDER BY Timestamp ASC
-        LIMIT $offset,$limit
-        ";
+    $myquery = "";
+
+    if ($allIDsChecked === 'true') {
+        $myquery = "
+            SELECT  Timestamp, id, type, X, Y
+            FROM  $day
+            ORDER BY Timestamp ASC
+            LIMIT $offset,$limit
+            ";
+    } else {
+        $myquery = "
+            SELECT  Timestamp, id, type, X, Y
+            FROM  $day
+            WHERE id = $selectedID
+            ORDER BY Timestamp ASC
+            LIMIT $offset,$limit
+            ";
+    }
+    
     $query = mysql_query($myquery);
     
     if ( ! $query ) {
