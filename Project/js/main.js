@@ -3,6 +3,7 @@
  */
 
 var sp1;
+var likert1;
 //global user input parameters
 var previousUserSelection;
 var currentUserSelection;
@@ -42,9 +43,12 @@ function init() {
 			gID += 1;
 		})
 		sp1 = new sp(data);
+		likert1 = new likert(data);
+
 		//Calls the filtering function 
     	d3.select("#slider").on("input", function () {
         	sp1.filterTime(this.value, data);
+        	likert1.filterTime(this.value, data);
     	});
 	});
 	previousUserSelection = currentUserSelection;
@@ -53,7 +57,12 @@ function init() {
  * run the clustering algorithm
  */
 function run() {
-	var reloadChartsRequired = false;
+	// delete old dots in scatter plot
+	sp1.deleteCircles();
+
+	//remove old likert chart
+    $('#display-likert-chart').empty();
+
 	//check if user selection changed for dataset or preprocessing
 	currentUserSelection = getUserSelection();
 
@@ -65,13 +74,15 @@ function run() {
         type: "GET",
         data: {
         	day: currentUserSelection.datasetDayString,
+        	allIDsChecked: currentUserSelection.allIDsChecked,
+        	selectedID: currentUserSelection.selectedID,
             limit: document.getElementById("limitID").value,
             offset: document.getElementById("offsetID").value
     	},
         dataType: "json",
         success: function (data) {
 	        //console.log("RESULT FROM PHP QUERY RECEIVED");
-	        sp1.deleteCircles();
+	        
 	        data.forEach(function(d) {
 				d["Timestamp"] = +parseDate(d["Timestamp"])
 				d["id"] = +d["id"]
@@ -81,7 +92,8 @@ function run() {
 			}) 
 	        gData = data;
 			//update data in charts
-			sp1.updateData(gData, clusterRes);
+			sp1.updateData(gData);
+			likert1.updateLikert(gData);
         },
         error: function () {
             console.log("NO RESULT FROM PHP QUERY RECEIVED");
@@ -117,6 +129,24 @@ function getUserSelection() {
 		datasetDayString = "sunday";
 	}
 
+	var allIDsChecked = document.getElementById('allID').checked;
+	userSelection.allIDsChecked = allIDsChecked;
+	// console.log("allIDsChecked");
+	// console.log(allIDsChecked);
+
+	var selectedID = 0;
+
+	//get selected ID if single ID is selected
+	if (allIDsChecked == false) {
+		//http://stackoverflow.com/questions/1085801/get-selected-value-in-dropdown-list-using-javascript
+		var e = document.getElementById("IDselectionID");
+		var selectedID = e.options[e.selectedIndex].text;
+		
+	}
+	userSelection.selectedID = selectedID;
+	// console.log("selectedID");
+	// console.log(selectedID);
+
 	// var normalizeDataset = document.getElementById('ppNormID').checked;
 	// var applyBirch = document.getElementById('birchID').checked;
 	// var areaYparameter = document.getElementById('areaYvalueID').value;
@@ -147,16 +177,28 @@ function getUserSelection() {
 }
 
 /**
- * shows or hides input fields based on selected DM algorithm
+ * get IDs for selected day in dropdown when user clicks on single ID
  */
  function idSelectionClick() {
  	var singleIdChecked = document.getElementById('singleID').checked;
  	if (singleIdChecked == true) {
  		//show
  		document.getElementById('singleIDdiv').style.display = "block";
+
+ 		var jsonDataPath = "data/distinct_IDs.json";
+ 		var currentUserSelection = getUserSelection();
+ 		if (currentUserSelection.datasetDayString == "friday") {
+ 			jsonDataPath = "data/distinct_IDs_friday.json";
+ 		} else if (currentUserSelection.datasetDayString == "saturday") {
+ 			jsonDataPath = "data/distinct_IDs_saturday.json";
+ 		} else {
+ 			jsonDataPath = "data/distinct_IDs_sunday.json";
+ 		}
+
+
  		// https://css-tricks.com/dynamic-dropdowns/
  		// http://stackoverflow.com/questions/17760866/fill-html-dropdown-box-with-external-json-file-data
- 		$.getJSON("data/distinct_IDs.json", function(data) {
+ 		$.getJSON(jsonDataPath, function(data) {
  			var $IDselectionID = $("#IDselectionID");
  			$IDselectionID.empty();
  			$.each(data, function(i, v) {
@@ -167,6 +209,21 @@ function getUserSelection() {
  		//hide
  		document.getElementById('singleIDdiv').style.display = "none";
  	}
+ }
+ /**
+ * show or hide the map in the background of the scatter plot
+ */
+ function showHideMap() {
+ 	var showMapBw = document.getElementById('showMapBwID').checked;
+ 	var showMapColor = document.getElementById('showMapColorID').checked;
+ 	if (showMapBw == true) {
+ 		sp1.showMap(0);
+ 	} else if (showMapColor == true) {
+ 		sp1.showMap(1);
+ 	} else {
+ 		sp1.showMap(2);
+ 	}
+ 	
  }
 
 

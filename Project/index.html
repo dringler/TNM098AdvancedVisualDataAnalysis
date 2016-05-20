@@ -16,6 +16,7 @@
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/colorbrewer.css">
+         <link rel="stylesheet" href="css/likert.css">
 
         <!--modules css-->
         <link rel="stylesheet" href="css/sp.css">
@@ -55,13 +56,13 @@
                             <div class="form-group">
                                 <label for="day">select day:</label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="day" id="dayFridayID" value="friday" checked>friday
+                                    <input type="radio" name="day" id="dayFridayID" value="friday" onclick="idSelectionClick();" checked>friday
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="day" id="daySaturdayID" value="saturday">saturday
+                                    <input type="radio" name="day" id="daySaturdayID" onclick="idSelectionClick();" value="saturday">saturday
                                 </label>
                                 <label class="radio-inline">
-                                    <input type="radio" name="day" id="daySundayID" value="sunday">sunday
+                                    <input type="radio" name="day" id="daySundayID" onclick="idSelectionClick();" value="sunday">sunday
                                 </label>
                             </div>
                             <br>
@@ -154,7 +155,6 @@
                                 </div>
                             </div> -->
                             <br>
-                            <br>
 
                  <!--            parameters:
                             <p id="k">
@@ -177,6 +177,20 @@
                             
                             <button type="button" class="btn btn-default btn-sm" id="applyButtonID" onclick="run()">Run</button> 
 
+                            <br>
+                            <div class="form-group" >
+                                <label for="map">Map:</label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="showMap" id="hideMapID" value="hide" onclick="showHideMap()" checked>hide
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="showMap" id="showMapBwID" value="showBw" onclick="showHideMap()">bw
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="showMap" id="showMapColorID" value="showColor" onclick="showHideMap()">color
+                                </label>
+                            </div>
+
                             <div>Timestamp
                             <br>
                               <p id="timeStartID" style="display:inline" > start </p>
@@ -192,9 +206,20 @@
                         <br>
 
                 </div>
-                <div class="col-md-6" id="sp" style="height: 40vh"></div>
+                <div class="grid">
+                     <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" id="sp" style="height: 400"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12" id="display-likert-chart" style="height: 200, width:500"></div>
+                    </div>
+                </div>
+
+
 
               
+
+
               <!--  <div class="col-md-6" id="area" style="height: 40vh"></div>
                 
                 <div id="pc" style="height: 30vh"></div>
@@ -204,24 +229,28 @@
 
         </div>
 
-        <div id="footer">
+        <<!-- div id="footer">
             <div class="container">
             </div>
-        </div>
+        </div> -->
 
         <script src="js/vendor/jquery-1.10.2.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
         <script src="js/vendor/bootstrap.min.js"></script>
         <script src="js/plugins.js"></script>
         <script src="js/vendor/modernizr-2.6.2.min.js"></script>
-        <script src="js/vendor/d3.v3.min.js"></script>
+        <script src="js/vendor/d3.v3.js"></script>
+        <!--<script src="js/vendor/d3.v3.min.js"></script>-->
         <script src="js/vendor/underscore-min.js"></script>
         <script src="js/vendor/colorbrewer.js"></script>
+        <script src="js/vendor/moment.min.js"></script>
+        <script src="js/vendor/d3.likert.js"></script>
 
         <!--modules js-->
+        <script src="js/main.js"></script>
         <script src="js/kmeans.js"></script>
         <script src="js/sp.js"></script>
-        <script src="js/main.js"></script>
+        <script src="js/likert.js"></script>
 
     </body>
 </html>
