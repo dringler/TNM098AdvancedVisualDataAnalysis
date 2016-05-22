@@ -255,7 +255,7 @@ function sp(data){
         dL();
     }
 
-    //Filters data points according to the specified magnitude
+    //Filters data points according to the specified timestamp
     this.filterTime = function(value) {
         svg.selectAll("circle")
             .style("opacity", function(d){

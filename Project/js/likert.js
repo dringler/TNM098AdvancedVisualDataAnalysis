@@ -9,7 +9,9 @@ function likert(data){
         //process new data
         var likertData = processData(data);
         // draw new chart
-        likObj = new d3Likert('#display-likert-chart', likertData, {height: 400, width: $('#display-likert-chart').width() });
+        // likObj = new d3Likert('#display-likert-chart', likertData, {height: 200, width: $('#display-likert-chart').width() });
+        likObj = new d3Likert('#display-likert-chart', likertData, {height: 200, width: 1200 });
+
     }
 
     this.filterTime = function(value) {
@@ -18,7 +20,7 @@ function likert(data){
 
     function drawChart(likertData) {
         // call the chart
-        likObj = new d3Likert('#display-likert-chart', likertData, {height: 400, width: $('#display-likert-chart').width() });
+        likObj = new d3Likert('#display-likert-chart', likertData, {height: 200, width: 1200 });
     }
 
 

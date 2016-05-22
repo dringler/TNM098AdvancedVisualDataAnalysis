@@ -48,7 +48,7 @@ var d3Likert = function(element, dataObject, dimensions){
          var xAxis = d3.svg.axis()
             .scale(x)
             .orient("top")
-            // .ticks(5)
+            .ticks(5)
             // .tickPadding(15)
             .tickFormat(timeFormatAxis);
 
