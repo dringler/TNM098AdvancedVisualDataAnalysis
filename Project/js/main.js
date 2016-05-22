@@ -4,6 +4,7 @@
 
 var sp1;
 var likert1;
+var cube1;
 //global user input parameters
 var previousUserSelection;
 var currentUserSelection;
@@ -44,11 +45,13 @@ function init() {
 		})
 		sp1 = new sp(data);
 		likert1 = new likert(data);
+		cube1 = new cube(data);
 
 		//Calls the filtering function 
     	d3.select("#slider").on("input", function () {
         	sp1.filterTime(this.value, data);
         	likert1.filterTime(this.value, data);
+        	cube1.filterTime(this.value, data);
     	});
 	});
 	previousUserSelection = currentUserSelection;
@@ -61,7 +64,11 @@ function run() {
 	sp1.deleteCircles();
 
 	//remove old likert chart
-    $('#display-likert-chart').empty();
+    $('#display-likert-chart').empty(); // clear content of the div tag
+
+    //remove cube
+    document.getElementById("canvasID").remove(); // remove the whole canvas element from the DOM
+
 
 	//check if user selection changed for dataset or preprocessing
 	currentUserSelection = getUserSelection();
@@ -94,6 +101,7 @@ function run() {
 			//update data in charts
 			sp1.updateData(gData);
 			likert1.updateLikert(gData);
+			cube1.updateCube(gData);
         },
         error: function () {
             console.log("NO RESULT FROM PHP QUERY RECEIVED");
