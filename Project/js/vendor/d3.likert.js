@@ -92,8 +92,14 @@ var d3Likert = function(element, dataObject, dimensions){
 
         // set up radius scales
         var rScale = d3.scale.linear()
-            .domain([minValue, maxValue])
-            .range([0, 20]);
+            .domain([minValue, maxValue]);
+
+        //apply smaller range for single visitor
+        if (maxValue == 1) {
+            rScale.range([0, 10]);
+        } else {
+            rScale.range([0, 20]);
+        }
         
         // set up the tooltip for mouseovers
         var div = d3.select("body").append("div")   

@@ -7,7 +7,7 @@ var matDelete;
 var scatterPlot;
 var scene;
 //data set
-var unfiltered = [];
+var unfiltered;
 
 // color scale
 var color = d3.scale.category10();
@@ -135,7 +135,7 @@ function cube(dataObject){
         //     console.log(d);
 
         // $.each(dataObject, function(index, data){
-            
+        unfiltered = [];
             dataObject.forEach(function (d,i) {
                 unfiltered[i] = {
                     // x: +d.x,
@@ -282,7 +282,7 @@ function cube(dataObject){
                 vertexColors: true,
                 opacity: 1,
                 transparent: true,
-                size: 10
+                size: 5
             });
 
             var pointCount = unfiltered.length;
