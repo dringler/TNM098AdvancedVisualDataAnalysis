@@ -96,9 +96,9 @@ var d3Likert = function(element, dataObject, dimensions){
 
         //apply smaller range for single visitor
         if (maxValue == 1) {
-            rScale.range([0, 10]);
+            rScale.range([1, 10]);
         } else {
-            rScale.range([0, 20]);
+            rScale.range([1, 30]);
         }
         
         // set up the tooltip for mouseovers
@@ -111,7 +111,7 @@ var d3Likert = function(element, dataObject, dimensions){
             
             var ratingArr = d3.entries(data.ratingDate);
 
-            // get the max number of votes within this ranking
+            // get the max value within this rating
             rangeMaxValue = d3.max(ratingArr, function(d) { return +d.value; });
 
             var g = svg.append('g');
@@ -135,14 +135,14 @@ var d3Likert = function(element, dataObject, dimensions){
                 .append('circle')
                     .attr("cx", function(d, i) { return xScale(new Date(d.key));})
                     .attr("cy", (index * 40) + 100)
-                    .attr("r", function(d) { return rScale(parseInt(d.value)); })
+                    .attr("r", function(d) { return rScale(+d.value); })
                     .attr("title", function(d){return d.value; })
                     .style("opacity", function(d) { 
                         // if this is the highest rated value,
                         // give it a different colour
                         if(d.value == rangeMaxValue){
                             // return 'rgb(252, 187, 161)';
-                            return 1;
+                            return 0.9;
                         }else{
                             // return "#ccc";
                             return 0.6;
@@ -177,13 +177,13 @@ var d3Likert = function(element, dataObject, dimensions){
                 .enter()
                 .append("text");
 
-            text
-                .attr("y", (index * 40) + 105)
-                .attr("x",function(d, i) { return xScale(new Date(d.key)) - 12; })
-                .attr("class","value")
-                .style('fill', '#666')
-                .text(function(d){ return d.value; })
-                .style("display","none");
+            // text
+            //     .attr("y", (index * 40) + 105)
+            //     .attr("x",function(d, i) { return xScale(new Date(d.key)) - 12; })
+            //     .attr("class","value")
+            //     .style('fill', '#666')
+            //     .text(function(d){ if(d.value>0) {return d.value;} })
+            //     .style("display","none");
 
             // Y-axis labels (contain html)
             g.append("foreignObject")
@@ -192,8 +192,8 @@ var d3Likert = function(element, dataObject, dimensions){
                 .attr("class","chart-label")
                 .attr("width", 100)
                 .attr("height", 40)
-                .on("mouseover", mouseover)
-                .on("mouseout", mouseout)
+                // .on("mouseover", mouseover)
+                // .on("mouseout", mouseout)
                 .append("xhtml:body")
                 .style("font", "12px 'Helvetica Neue'")
                 .style("line-height", "16px")

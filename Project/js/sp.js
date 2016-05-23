@@ -300,6 +300,7 @@ function sp(data){
         svg.selectAll("circle").remove();
     }
 
+
 //     /**
 //     * method for selecting a single line in the PC
 //     * @param value: the id of the selected line
