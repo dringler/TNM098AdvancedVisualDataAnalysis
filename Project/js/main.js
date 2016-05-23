@@ -9,6 +9,9 @@ var cube1;
 var previousUserSelection;
 var currentUserSelection;
 
+//global value for current selection on time slider
+var currentTimeFilterValue;
+
 var data;
 var gData;
 var gID = 0;
@@ -49,13 +52,23 @@ function init() {
 
 		//Calls the filtering function 
     	d3.select("#slider").on("input", function () {
-        	sp1.filterTime(this.value, data);
-        	likert1.filterTime(this.value, data);
-        	cube1.filterTime(this.value, data);
+    		currentTimeFilterValue = this.value;
+    		filterTimeFunction(currentTimeFilterValue);
     	});
 	});
 	previousUserSelection = currentUserSelection;
 }
+
+
+/**
+ * run the filter time function for all charts
+ */
+function filterTimeFunction(value) {
+	sp1.filterTime(value, data);
+    likert1.filterTime(value, data);
+    cube1.filterTime(value, data);
+}
+
 /**
  * run the clustering algorithm
  */
@@ -231,6 +244,7 @@ function getUserSelection() {
  	} else {
  		sp1.showMap(2);
  	}
+ 	filterTimeFunction(currentTimeFilterValue);
  	
  }
 
