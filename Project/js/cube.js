@@ -346,54 +346,54 @@ function cube(dataObject){
             }
 
             // add titles to axes
-            var titleX = createText2D('X');
-            titleX.position.x = xScale(vpts.xMin) + 12,
-            titleX.position.y = 5;
+            var titleX = createText2D('X: ' + format(xExent[0]));
+            titleX.position.x = xScale(vpts.xMin) + 15,
+            // titleX.position.y = 5;
             scatterPlot.add(titleX);
 
-            var valueX = createText2D(format(xExent[0]));
-            valueX.position.x = xScale(vpts.xMin) + 12,
-            valueX.position.y = -5;
-            scatterPlot.add(valueX);
+            // var valueX = createText2D(format(xExent[0]));
+            // valueX.position.x = xScale(vpts.xMin) + 15,
+            // valueX.position.y = -5;
+            // scatterPlot.add(valueX);
 
-            var titleX = createText2D('X');
-            titleX.position.x = xScale(vpts.xMax) - 12;
-            titleX.position.y = 5;
+            var titleX = createText2D('X: ' + format(xExent[1]));
+            titleX.position.x = xScale(vpts.xMax) - 15;
+            // titleX.position.y = 5;
             scatterPlot.add(titleX);
 
-            var valueX = createText2D(format(xExent[1]));
-            valueX.position.x = xScale(vpts.xMax) - 12,
-            valueX.position.y = -5;
-            scatterPlot.add(valueX);
+            // var valueX = createText2D(format(xExent[1]));
+            // valueX.position.x = xScale(vpts.xMax) - 15,
+            // valueX.position.y = -5;
+            // scatterPlot.add(valueX);
 
             // var titleY = createText2D('-Y');
             var titleY = createText2D('Timestamp');
-            titleY.position.y = yScale(vpts.yMin) - 5;
+            titleY.position.y = yScale(vpts.yMin) + 15;
             scatterPlot.add(titleY);
 
             // var valueY = createText2D(format(yExent[0]));
             var valueY = createText2D(moment.unix(yExent[0]).format("DD-MM-YYYY HH:mm:ss"));
-            valueY.position.y = yScale(vpts.yMin) - 15,
+            valueY.position.y = yScale(vpts.yMin) + 5,
             scatterPlot.add(valueY);
 
             // var titleY = createText2D('Y');
             var titleY = createText2D('Timestamp');
-            titleY.position.y = yScale(vpts.yMax) + 15;
+            titleY.position.y = yScale(vpts.yMax) - 5;
             scatterPlot.add(titleY);
 
             // var valueY = createText2D(format(yExent[1]));
             var valueY = createText2D(moment.unix(yExent[1]).format("DD-MM-YYYY HH:mm:ss"));
-            valueY.position.y = yScale(vpts.yMax) + 5,
+            valueY.position.y = yScale(vpts.yMax) - 15,
             scatterPlot.add(valueY);
 
             // var titleZ = createText2D('-Z ' + format(zExent[0]));
-            var titleZ = createText2D('Y ' + format(zExent[0]));
-            titleZ.position.z = zScale(vpts.zMin) + 2;
+            var titleZ = createText2D('Y: ' + format(zExent[0]));
+            titleZ.position.z = zScale(vpts.zMin) - 5;
             scatterPlot.add(titleZ);
 
             // var titleZ = createText2D('Z ' + format(zExent[1]));
-            var titleZ = createText2D('Y ' + format(zExent[1]));
-            titleZ.position.z = zScale(vpts.zMax) + 2;
+            var titleZ = createText2D('Y: ' + format(zExent[1]));
+            titleZ.position.z = zScale(vpts.zMax) + 5;
             scatterPlot.add(titleZ);
 
             // var mat = new THREE.ParticleBasicMaterial({
