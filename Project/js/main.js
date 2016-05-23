@@ -50,9 +50,12 @@ function init() {
 		likert1 = new likert(data);
 		cube1 = new cube(data);
 
+		currentTimeFilterValue = document.getElementById("slider").value;
+		
 		//Calls the filtering function 
     	d3.select("#slider").on("input", function () {
     		currentTimeFilterValue = this.value;
+    		console.log("currentTimeFilterValue: " + currentTimeFilterValue);
     		filterTimeFunction(currentTimeFilterValue);
     	});
 	});
