@@ -80,9 +80,13 @@ function cube(dataObject){
                 color: 0xffffff,
                 transparent: true
             });
+            // double sided text
+            planeMat.side = THREE.DoubleSide;
             var mesh = new THREE.Mesh(plane, planeMat);
             mesh.scale.set(0.5, 0.5, 0.5);
             mesh.doubleSided = true;
+            // rotate the text 180°
+            mesh.rotation.y = Math.PI ;
             return mesh;
         }
 
@@ -114,9 +118,9 @@ function cube(dataObject){
         renderer.setClearColor( 0xffffff, 1.0 ); // white
 
         var camera = new THREE.PerspectiveCamera(45, w / h, 1, 10000);
-        camera.position.z = 200;
-        camera.position.x = -100;
-        camera.position.y = 100;
+        camera.position.z = -150;
+        camera.position.x = 0;
+        camera.position.y = 130;
 
         scene = new THREE.Scene();
 
@@ -174,7 +178,7 @@ function cube(dataObject){
 
             xScale = d3.scale.linear()
                           .domain(xExent)
-                          .range([-50,50]);
+                          .range([50,-50]);
             yScale = d3.scale.linear()
                           .domain(yExent)
                           .range([50,-50]); // change direction so earlier timestamp is on top of the cube                
@@ -182,68 +186,183 @@ function cube(dataObject){
                           .domain(zExent)
                           .range([-50,50]);
 
-            var lineGeo = new THREE.Geometry();
-            lineGeo.vertices.push(
-                v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zCen)), v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zCen)),
-                v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zCen)), v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zCen)),
-                v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMax)), v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMin)),
 
-                v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zMin)), v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zMin)),
-                v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zMin)), v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zMin)),
-                v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zMax)), v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zMax)),
-                v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zMax)), v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zMax)),
 
-                v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zMax)), v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zMax)),
-                v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zMin)), v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zMin)),
-                v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zCen)), v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zCen)),
-                v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zCen)), v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zCen)),
-
-                v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zMin)), v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zMin)),
-                v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zMin)), v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zMin)),
-                v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zMax)), v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zMax)),
-                v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zMax)), v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zMax)),
-
-                v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zMax)), v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zMax)),
-                v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zMin)), v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zMin)),
-                v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zCen)), v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zCen)),
-                v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zCen)), v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zCen)),
-
-                v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zMin)), v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zMax)),
-                v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zMin)), v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zMax)),
-                v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zMin)), v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zMax)),
-                v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zMin)), v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zMax)),
-
-                v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zMin)), v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zMax)),
-                v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zMin)), v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zMax)),
-                v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zMin)), v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zMin)),
-                v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zMin)), v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zMax))
-
-            );
             var lineMat = new THREE.LineBasicMaterial({
                 color: 0x000000,
                 lineWidth: 1
             });
-            var line = new THREE.Line(lineGeo, lineMat);
-            line.type = THREE.Lines;
-            scatterPlot.add(line);
+            // cube edges
+            for (var i = 0; i < 8; i++) {
+                var lineGeo = new THREE.Geometry();
+                switch(i) {
+                    case 0:
+                        //box front top left
+                        lineGeo.vertices.push(
+                            // top
+                            v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zCen)),
+                            // bottom
+                            v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zCen))             
+                        );
+                        break;
+                    case 1:
+                        //box front top right
+                        lineGeo.vertices.push(
+                            // top
+                            v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zCen)),
+                            // bottom
+                            v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zCen))             
+                        );
+                        break;
+                    case 2:
+                        //box front bottom right
+                        lineGeo.vertices.push(
+                            // top
+                            v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zCen)),
+                            // bottom
+                            v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zCen))             
+                        );
+                        break;
+                    case 3:
+                        //box front bottom left
+                        lineGeo.vertices.push(
+                            // top
+                            v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zCen)),
+                            // bottom
+                            v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMin)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zCen))             
+                        );
+                        break;
+                    case 4:
+                        //box back top left
+                        lineGeo.vertices.push(
+                            // top
+                            v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zCen)),
+                            // bottom
+                            v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zCen))             
+                        );
+                        break;
+                    case 5:
+                        //box back top right
+                        lineGeo.vertices.push(
+                            // top
+                            v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMin), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zCen)),
+                            // bottom
+                            v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zCen))             
+                        );
+                        break;
+                    case 6:
+                        //box back bottom right
+                        lineGeo.vertices.push(
+                            // top
+                            v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zCen)),
+                            // bottom
+                            v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMax), yScale(vpts.yCen), zScale(vpts.zCen))             
+                        );
+                        break;
+                    case 7:
+                        //box back bottom left
+                        lineGeo.vertices.push(
+                            // top
+                            v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yMax), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zCen)),
+                            // bottom
+                            v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zMax)),
+                            v(xScale(vpts.xCen), yScale(vpts.yCen), zScale(vpts.zCen)),
+                            v(xScale(vpts.xMin), yScale(vpts.yCen), zScale(vpts.zCen))             
+                        );
+                        break;
+                    default:
+                        // simple box outline
+                        lineGeo.vertices.push(
+                            //top
+                            v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zMin)),
+                            v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zMin)),
+                            v(xScale(vpts.xMax), yScale(vpts.yMin), zScale(vpts.zMax)),
+                            v(xScale(vpts.xMin), yScale(vpts.yMin), zScale(vpts.zMax)),
+                            // bottom
+                            v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zMin)),
+                            v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zMin)),
+                            v(xScale(vpts.xMax), yScale(vpts.yMax), zScale(vpts.zMax)),
+                            v(xScale(vpts.xMin), yScale(vpts.yMax), zScale(vpts.zMax))             
+                        );
+                }
+                // create line
+                // var line = new THREE.Line(lineGeo, lineMat);
+                // line.type = THREE.Lines;
+                // scatterPlot.add(line);
 
+                // create cube mesh object
+                var cubeMesh = new THREE.Mesh(lineGeo, lineMat);
+
+                // create cube and add it to the scatter plot
+                var cube = new THREE.BoxHelper(cubeMesh);
+                cube.material.color.set(0x000000);
+                scatterPlot.add(cube);
+            }
+
+            // add titles to axes
             var titleX = createText2D('X');
-            titleX.position.x = xScale(vpts.xMin) - 12,
+            titleX.position.x = xScale(vpts.xMin) + 12,
             titleX.position.y = 5;
             scatterPlot.add(titleX);
 
             var valueX = createText2D(format(xExent[0]));
-            valueX.position.x = xScale(vpts.xMin) - 12,
+            valueX.position.x = xScale(vpts.xMin) + 12,
             valueX.position.y = -5;
             scatterPlot.add(valueX);
 
             var titleX = createText2D('X');
-            titleX.position.x = xScale(vpts.xMax) + 12;
+            titleX.position.x = xScale(vpts.xMax) - 12;
             titleX.position.y = 5;
             scatterPlot.add(titleX);
 
             var valueX = createText2D(format(xExent[1]));
-            valueX.position.x = xScale(vpts.xMax) + 12,
+            valueX.position.x = xScale(vpts.xMax) - 12,
             valueX.position.y = -5;
             scatterPlot.add(valueX);
 
@@ -294,13 +413,6 @@ function cube(dataObject){
                 var type = unfiltered[i].type;    
 
                 pointGeo.vertices.push(new THREE.Vector3(x, y, z));
-                // console.log(pointGeo.vertices);
-                //pointGeo.vertices[i].angle = Math.atan2(z, x);
-                //pointGeo.vertices[i].radius = Math.sqrt(x * x + z * z);
-                //pointGeo.vertices[i].speed = (z / 100) * (x / 100);
-                // pointGeo.colors.push(new THREE.Color().setRGB(
-                //   hexToRgb(colour(i)).r / 255, hexToRgb(colour(i)).g / 255, hexToRgb(colour(i)).b / 255 
-                // ));
                 pointGeo.colors.push(new THREE.Color(color(type)));
 
             }
