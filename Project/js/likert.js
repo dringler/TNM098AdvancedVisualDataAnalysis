@@ -1,8 +1,8 @@
 var likObj;
 
-function likert(data){
+function likert(data, sp1, cube1, mainThis){
     var likertData = processData(data);   
-    drawChart(likertData);
+    drawChart(likertData, sp1, cube1, mainThis);
 
     //update likert function
     this.updateLikert = function(data) {
@@ -10,7 +10,7 @@ function likert(data){
         var likertData = processData(data);
         // draw new chart
         // likObj = new d3Likert('#display-likert-chart', likertData, {height: 200, width: $('#display-likert-chart').width() });
-        likObj = new d3Likert('#display-likert-chart', likertData, {height: 200, width: 1200 });
+        likObj = new d3Likert('#display-likert-chart', likertData, {height: 200, width: 1200 }, sp1, cube1, mainThis);
 
     }
 
@@ -18,9 +18,9 @@ function likert(data){
         likObj.filterTime(value, data);
     }
 
-    function drawChart(likertData) {
+    function drawChart(likertData, sp1, cube1, mainThis) {
         // call the chart
-        likObj = new d3Likert('#display-likert-chart', likertData, {height: 200, width: 1200 });
+        likObj = new d3Likert('#display-likert-chart', likertData, {height: 200, width: 1200 }, sp1, cube1, mainThis);
     }
 
 

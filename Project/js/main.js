@@ -28,8 +28,6 @@ function init() {
 
 	//time parsing 2013-03-25 17:59:00;
 	//var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S");
-	
-
 
 	//load sample data
 	d3.json("php/data_friday_sample.php", function (data) {
@@ -47,15 +45,17 @@ function init() {
 			gID += 1;
 		})
 		sp1 = new sp(data);
-		likert1 = new likert(data);
 		cube1 = new cube(data);
+		likert1 = new likert(data, sp1, cube1, this);
 
+		// get current silder value
 		currentTimeFilterValue = document.getElementById("slider").value;
-		
+		// show map based on user selection
+		showHideMap();
+
 		//Calls the filtering function 
     	d3.select("#slider").on("input", function () {
     		currentTimeFilterValue = this.value;
-    		console.log("currentTimeFilterValue: " + currentTimeFilterValue);
     		filterTimeFunction(currentTimeFilterValue);
     	});
 	});
@@ -66,7 +66,10 @@ function init() {
 /**
  * run the filter time function for all charts
  */
-function filterTimeFunction(value) {
+this.filterTimeFunction = function(value) {
+	//update currentTimeFilterValue (might be updated from likert chart)
+	currentTimeFilterValue = value;
+	// filter time for each chart
 	sp1.filterTime(value, data);
     likert1.filterTime(value, data);
     cube1.filterTime(value, data);

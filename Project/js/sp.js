@@ -259,10 +259,27 @@ function sp(data){
     this.filterTime = function(value) {
         svg.selectAll("circle")
             .style("opacity", function(d){
-                if (value < d["Timestamp"]) {return 0}
-                else {return 1};
+                if (value < d["Timestamp"]) {return 0;}
+                else {return 1;};
             })
     }
+
+    //method for selecting the dot from other components
+    this.selectDot = function(value){
+        svg.selectAll("circle").style("opacity", function(d) {
+            if (value == new Date(d["Timestamp"])) {return 1;} 
+             else {return 0;};
+        })
+    }
+
+    // reset the selection (dot or time range)
+    this.resetSelection = function() {
+        svg.selectAll("circle").style("opacity", function(d) {
+            return 1;
+        })
+    }
+
+
 
     // // Returns the path for a given data point.
     // function path(d) {

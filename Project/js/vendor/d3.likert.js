@@ -9,9 +9,21 @@
  
  */
  //global rangeMaxValue for filterTime function
-var rangeMaxValue;
+var maxValue;
 
-var d3Likert = function(element, dataObject, dimensions){
+// global referneces to other charts
+var globalSP;
+var globalCube;
+var globalMainThis;
+
+var d3Likert = function(element, dataObject, dimensions, sp1, cube1, mainThis){
+
+    globalSP = sp1;
+    globalCube = cube1;
+    globalMainThis = mainThis;
+
+    // global variable for clicked dot
+    var dotSelected = false;
 
     var d3PrePropData = [];    
 
@@ -94,7 +106,7 @@ var d3Likert = function(element, dataObject, dimensions){
         var rScale = d3.scale.linear()
             .domain([minValue, maxValue]);
 
-        //apply smaller range for single visitor
+        //apply smaller range for single visitor(ID)
         if (maxValue == 1) {
             rScale.range([1, 10]);
         } else {
@@ -140,7 +152,7 @@ var d3Likert = function(element, dataObject, dimensions){
                     .style("opacity", function(d) { 
                         // if this is the highest rated value,
                         // give it a different colour
-                        if(d.value == rangeMaxValue){
+                        if(d.value == maxValue){
                             // return 'rgb(252, 187, 161)';
                             return 0.9;
                         }else{
@@ -154,7 +166,7 @@ var d3Likert = function(element, dataObject, dimensions){
                 .on("mouseover", function(d) { 
                     div.transition()        
                         .duration(200)      
-                        .style("opacity", .9);      
+                        .style("opacity", 1);      
                     div .html('<strong>' + 
                     // moment(d.key).format("DD-MM-YYYY HH:mm:ss")
                     timeFormat(new Date(d.key))
@@ -167,7 +179,46 @@ var d3Likert = function(element, dataObject, dimensions){
                     div.transition()        
                         .duration(500)      
                         .style("opacity", 0);   
-                });
+                })
+                .on("click", function(d) {
+                        filterDots(d);
+                    });
+
+                function filterDots(selectedDot) {
+                    if (dotSelected == false) {
+                        svg.selectAll("circle")
+                            .style("opacity", function(d){
+                                date = new Date(d.key);
+                                if (selectedDot.key == date) {
+                                   return 1;
+                                } else {
+                                    return 0;
+                                }
+                            });
+                            // scatter plot
+                            globalSP.selectDot(selectedDot.key);
+                            // cube
+                            globalCube.selectDot(selectedDot.key);
+                            dotSelected = true;  
+                    } else { //reset selection
+                        svg.selectAll("circle")
+                            .style("opacity", function(d){
+                                if(d.value == maxValue){
+                                    return 0.9;
+                                } else {
+                                    return 0.6;
+                                }    
+                            });
+                        //remove selection in SP
+                        globalSP.resetSelection();
+                        // remove selection in cube
+                        globalCube.resetSelection();
+
+                        globalMainThis.filterTimeFunction(document.getElementById("slider").value);
+                        dotSelected = false;
+                    }
+
+                };
 
 
             // Add the actual values as text below the 
@@ -236,17 +287,18 @@ var d3Likert = function(element, dataObject, dimensions){
             .style("opacity", function(d){
                 date = new Date(d.key);
                 time = +date;
-                if (value < time) {return 0}
+                if (value < time) {return 0;}
                 else {
-                    if(d.value == rangeMaxValue){
+                    if(d.value == maxValue){
                             // return 'rgb(252, 187, 161)';
-                            return 1;
+                            return 0.9;
                         }else{
                             // return "#ccc";
                             return 0.6;
                         }    
                 };
             })
+        dotSelected = false;
     }
 
 };

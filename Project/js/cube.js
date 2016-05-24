@@ -30,7 +30,7 @@ function cube(dataObject){
     this.filterTime = function(value) {
         // remove all points
         scatterPlot.remove(points);
-
+        // check which points should be shown
         var newPointGeo = new THREE.Geometry();
             for (var i = 0; i < unfiltered.length; i ++) {
                 // check value against timestamp
@@ -48,6 +48,58 @@ function cube(dataObject){
             // add points to scatter plot
             points = new THREE.Points(newPointGeo, mat);
             scatterPlot.add(points);
+    }
+
+    //method for selecting the dot from other components
+    this.selectDot = function(value){
+        // remove all points
+        scatterPlot.remove(points);
+        // check which points should be shown
+        var newPointGeo = new THREE.Geometry();
+            for (var i = 0; i < unfiltered.length; i ++) {
+                // check value against timestamp
+                if(value == new Date(unfiltered[i].y*1000)) {
+                    var x = xScale(unfiltered[i].x);
+                    var y = yScale(unfiltered[i].y);
+                    var z = zScale(unfiltered[i].z);
+                    var type = unfiltered[i].type;    
+
+                    newPointGeo.vertices.push(new THREE.Vector3(x, y, z));
+                    newPointGeo.colors.push(new THREE.Color(color(type)));
+                }
+
+            }
+            // add points to scatter plot
+            points = new THREE.Points(newPointGeo, mat);
+            scatterPlot.add(points);
+    }
+
+    // reset the selection (dot or time range)
+    this.resetSelection = function() {
+        // remove all points
+        scatterPlot.remove(points);
+
+        // check which points should be shown
+        var newPointGeo = new THREE.Geometry();
+            for (var i = 0; i < unfiltered.length; i ++) {
+                // add all points
+                var x = xScale(unfiltered[i].x);
+                var y = yScale(unfiltered[i].y);
+                var z = zScale(unfiltered[i].z);
+                var type = unfiltered[i].type;    
+                
+                newPointGeo.vertices.push(new THREE.Vector3(x, y, z));
+                newPointGeo.colors.push(new THREE.Color(color(type)));
+
+            }
+            // add points to scatter plot
+            points = new THREE.Points(newPointGeo, mat);
+            scatterPlot.add(points);
+
+
+        // svg.selectAll("circle").style("opacity", function(d) {
+        //     return 1;
+        // })
     }
 
 
@@ -137,7 +189,6 @@ function cube(dataObject){
 
         // var data = d3.csv("data/defaultData.csv", function (d) {
         //     console.log(d);
-
         // $.each(dataObject, function(index, data){
         unfiltered = [];
             dataObject.forEach(function (d,i) {
@@ -178,7 +229,7 @@ function cube(dataObject){
 
             xScale = d3.scale.linear()
                           .domain(xExent)
-                          .range([50,-50]);
+                          .range([50,-50]); //flip axis
             yScale = d3.scale.linear()
                           .domain(yExent)
                           .range([50,-50]); // change direction so earlier timestamp is on top of the cube                
@@ -187,12 +238,13 @@ function cube(dataObject){
                           .range([-50,50]);
 
 
-
+            // specify line appearance for cube outlines
             var lineMat = new THREE.LineBasicMaterial({
                 color: 0x000000,
                 lineWidth: 1
             });
-            // cube edges
+            // define cube edges
+            // eight smaller cubes 
             for (var i = 0; i < 8; i++) {
                 var lineGeo = new THREE.Geometry();
                 switch(i) {
@@ -450,6 +502,30 @@ function cube(dataObject){
                     sy += dy;
                 }
             }
+
+           
+
+            // canvasElement.onwheel = function(ev) {
+            //     console.log(ev);
+            //     var d = ((typeof ev.wheelDelta != "undefined")?(-ev.wheelDelta):ev.detail);
+            //     d = 100 * ((d>0)?1:-1);    
+            //     var cPos = camera.position;
+            //     if (isNaN(cPos.x) || isNaN(cPos.y) || isNaN(cPos.y)) return;
+
+            //     // Your zomm limitation
+            //     // For X axe you can add anothers limits for Y / Z axes
+            //     if (cPos.x > 0 || cPos.x < 100 ){
+            //         return ;
+            //     }
+
+            //     mb = d>0 ? 1.1 : 0.9;
+            //     cPos.x = cPos.x * mb;
+            //     cPos.y = cPos.y * mb;
+            //     cPos.z = cPos.z * mb;       
+            //     console.log(mb);
+
+            // }
+
             var animating = false;
             // window.ondblclick = function() {
             canvasElement.ondblclick = function() {
