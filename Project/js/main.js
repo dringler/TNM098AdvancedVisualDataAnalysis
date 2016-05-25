@@ -102,6 +102,7 @@ function run() {
         	day: currentUserSelection.datasetDayString,
         	allIDsChecked: currentUserSelection.allIDsChecked,
         	selectedID: currentUserSelection.selectedID,
+        	typeSelectionString: currentUserSelection.typeSelectionString,
             limit: document.getElementById("limitID").value,
             offset: document.getElementById("offsetID").value
     	},
@@ -143,19 +144,19 @@ function getUserSelection() {
 	// var DMa; //data mining algorithm, 0:BIRCH, 1:kMeans
 	// var DMp = []; //data mining parameters
 	//get user selection
-	var datasetDay = 0;
+	//get dataset day selection
+	// var datasetDay = 0;
 	var datasetDayString ="friday";
-	var datasetFriday = document.getElementById('dayFridayID').checked;
 	var datasetSaturday = document.getElementById('daySaturdayID').checked;
 	var datasetSunday = document.getElementById('daySundayID').checked;
 	if (datasetSaturday == true) {
-	 	datasetDay = 1;
+	 	// datasetDay = 1;
 	 	datasetDayString = "saturday";
 	} else if (datasetSunday == true) {
-		datasetDay = 2;
+		// datasetDay = 2;
 		datasetDayString = "sunday";
 	}
-
+	// get ID selection
 	var allIDsChecked = document.getElementById('allID').checked;
 	userSelection.allIDsChecked = allIDsChecked;
 	// console.log("allIDsChecked");
@@ -173,6 +174,17 @@ function getUserSelection() {
 	userSelection.selectedID = selectedID;
 	// console.log("selectedID");
 	// console.log(selectedID);
+
+	//get type selection
+	// var typeSelection = 0;
+	var typeSelectionString = "";
+	if (document.getElementById("checkInID").checked) {
+		typeSelectionString = "check-in";
+	} else if (document.getElementById("movementID").checked) {
+		typeSelectionString = "movement";
+	}
+	userSelection.typeSelectionString = typeSelectionString;
+
 
 	// var normalizeDataset = document.getElementById('ppNormID').checked;
 	// var applyBirch = document.getElementById('birchID').checked;
@@ -193,7 +205,7 @@ function getUserSelection() {
 	// }
 	
 	//save user selection in return object
-	userSelection.datasetDay = datasetDay;
+	// userSelection.datasetDay = datasetDay;
 	userSelection.datasetDayString = datasetDayString;
 	// userSelection.normalizeDataset = normalizeDataset;
 	// userSelection.areaYparameter = areaYparameter;
@@ -237,6 +249,7 @@ function getUserSelection() {
  		document.getElementById('singleIDdiv').style.display = "none";
  	}
  }
+
  /**
  * show or hide the map in the background of the scatter plot
  */

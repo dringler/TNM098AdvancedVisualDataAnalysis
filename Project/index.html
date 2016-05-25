@@ -76,6 +76,27 @@
                             </div>
                             <br>
                             <div class="form-group" >
+                                <label for="TypeSelection">Type:</label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="TypeSelection" id="allTypesID" value="all" checked>all
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="TypeSelection" id="checkInID" value="check-in">check-in
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="TypeSelection" id="movementID" value="movement">movement
+                                </label>
+                            </div>
+                             <div id="singleIDdiv" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="idSelection">ID:</label>
+                                    <select id= "IDselectionID" name="IDselection">
+                                      <option></option>
+                                    </select>
+                                    </div>
+                                </div>
+                            <br>
+                            <div class="form-group" >
                                 <label for="IDselection">IDs:</label>
                                 <label class="radio-inline">
                                     <input type="radio" name="IDselection" id="allID" value="all" onclick="idSelectionClick()" checked>all
