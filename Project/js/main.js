@@ -10,7 +10,7 @@ var previousUserSelection;
 var currentUserSelection;
 
 //global value for current selection on time slider
-var currentTimeFilterValue;
+// var currentTimeFilterValue;
 
 var data;
 var gData;
@@ -49,31 +49,31 @@ function init() {
 		likert1 = new likert(data, sp1, cube1, this);
 
 		// get current silder value
-		currentTimeFilterValue = document.getElementById("slider").value;
+		// currentTimeFilterValue = document.getElementById("slider").value;
 		// show map based on user selection
 		showHideMap();
 
 		//Calls the filtering function 
-    	d3.select("#slider").on("input", function () {
-    		currentTimeFilterValue = this.value;
-    		filterTimeFunction(currentTimeFilterValue);
-    	});
+    	// d3.select("#slider").on("input", function () {
+    	// 	currentTimeFilterValue = this.value;
+    	// 	filterTimeFunction(currentTimeFilterValue);
+    	// });
 	});
 	previousUserSelection = currentUserSelection;
 }
 
 
-/**
- * run the filter time function for all charts
- */
-this.filterTimeFunction = function(value) {
-	//update currentTimeFilterValue (might be updated from likert chart)
-	currentTimeFilterValue = value;
-	// filter time for each chart
-	sp1.filterTime(value, data);
-    likert1.filterTime(value, data);
-    cube1.filterTime(value, data);
-}
+// /**
+//  * run the filter time function for all charts
+//  */
+// this.filterTimeFunction = function(value) {
+// 	//update currentTimeFilterValue (might be updated from likert chart)
+// 	currentTimeFilterValue = value;
+// 	// filter time for each chart
+// 	// sp1.filterTime(value, data);
+//     // likert1.filterTime(value, data);
+//     // cube1.filterTime(value, data);
+// }
 
 /**
  * run the clustering algorithm
@@ -250,7 +250,7 @@ function getUserSelection() {
  	} else {
  		sp1.showMap(2);
  	}
- 	filterTimeFunction(currentTimeFilterValue);
+ 	// filterTimeFunction(currentTimeFilterValue);
  	
  }
 

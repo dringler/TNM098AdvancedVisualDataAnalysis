@@ -13,6 +13,11 @@ function sp(data){
     // global variable for draw & remove legend
     var dL;
     var rL;
+
+    //global value for time range selection extent
+    var gExtent0;
+    var gExtent1;
+
     // color scale
     var color = d3.scale.category10();
 
@@ -72,15 +77,15 @@ function sp(data){
         dL = drawLegend;
         rL = removeLegend;
 
-        var extentTimestamp = d3.extent(data, function(d) { return +d.Timestamp;});
-        var startTimestamp = moment.unix(extentTimestamp[0] / 1000);
-        var endTimestamp = moment.unix(extentTimestamp[1] / 1000);
-        document.getElementById('timeStartID').innerHTML = startTimestamp.format("DD-MM-YYYY HH:mm:ss");
-        document.getElementById('timeEndID').innerHTML = endTimestamp.format("DD-MM-YYYY HH:mm:ss");
+        // var extentTimestamp = d3.extent(data, function(d) { return +d.Timestamp;});
+        // var startTimestamp = moment.unix(extentTimestamp[0] / 1000);
+        // var endTimestamp = moment.unix(extentTimestamp[1] / 1000);
+        // document.getElementById('timeStartID').innerHTML = startTimestamp.format("DD-MM-YYYY HH:mm:ss");
+        // document.getElementById('timeEndID').innerHTML = endTimestamp.format("DD-MM-YYYY HH:mm:ss");
 
-        document.getElementById("slider").min = extentTimestamp[0];
-        document.getElementById("slider").max = extentTimestamp[1];
-        document.getElementById("slider").value = extentTimestamp[1];
+        // document.getElementById("slider").min = extentTimestamp[0];
+        // document.getElementById("slider").max = extentTimestamp[1];
+        // document.getElementById("slider").value = extentTimestamp[1];
 
         // setup x 
         var xValue = function(d) { return d['X'];}, // data -> value
@@ -246,29 +251,46 @@ function sp(data){
         dL();
         //redraw dots
         dD(); 
+        // apply the time filtering if time range extent is not undefined
+        if (gExtent0 != undefined && gExtent1 != undefined) {
+            this.filterTime(gExtent0, gExtent1);
+        }
     }
     function removeMap() {
         svg.selectAll("defs").remove();
         svg.selectAll("rect").remove();
         //redraw legend
         rL();
+        //redraw dots
         dL();
+         // apply the time filtering if time range extent is not undefined
+        if (gExtent0 != undefined && gExtent1 != undefined) {
+            this.filterTime(gExtent0, gExtent1);
+        }
     }
 
     //Filters data points according to the specified timestamp
-    this.filterTime = function(value) {
-        svg.selectAll("circle")
-            .style("opacity", function(d){
-                if (value < d["Timestamp"]) {return 0;}
-                else {return 1;};
+    this.filterTime = function(extent0, extent1) {
+        gExtent0 = extent0;
+        gExtent1 = extent1;
+        if(extent0 == extent1) {
+            this.resetSelection();
+        } else {
+            svg.selectAll("circle").style("opacity", function(d){
+                if (extent0 <= d["Timestamp"] && d["Timestamp"] <= extent1) {
+                    return 1;
+                } else {
+                    return 0.1;
+                }
             })
+        } 
     }
 
     //method for selecting the dot from other components
     this.selectDot = function(value){
         svg.selectAll("circle").style("opacity", function(d) {
             if (value == new Date(d["Timestamp"])) {return 1;} 
-             else {return 0;};
+             else {return 0.1;};
         })
     }
 

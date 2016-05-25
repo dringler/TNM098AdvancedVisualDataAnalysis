@@ -24,6 +24,8 @@ var d3Likert = function(element, dataObject, dimensions, sp1, cube1, mainThis){
 
     // global variable for clicked dot
     var dotSelected = false;
+    // allow dot selection only if no time range is selected with brush
+    var allowDotSelection = true;
 
     var d3PrePropData = [];    
 
@@ -72,6 +74,10 @@ var d3Likert = function(element, dataObject, dimensions, sp1, cube1, mainThis){
         x.domain([extentTimestamp[0], extentTimestamp[1]]);
         xScale.domain([extentTimestamp[0], extentTimestamp[1]]);
 
+        var brush = d3.svg.brush()
+            .x(x)
+            .on("brush", brushed);
+
         // add x-axis
         svg.append("g")
             .attr("class", "x axis")
@@ -79,6 +85,14 @@ var d3Likert = function(element, dataObject, dimensions, sp1, cube1, mainThis){
             .attr("transform", "translate(0," + 0 + ")")
             .style("font", "12px 'Helvetica Neue'")
             .call(xAxis);
+
+        svg.append("g")
+            .attr("class", "x brush")
+            .call(brush)  //call the brush function, causing it to create the rectangles
+            .selectAll("rect") //select all the just-created rectangles
+                .attr("y", -6)
+                .attr("height", height ); //set their height
+
 
         // 
         // get the min/max number of votes across all ratings
@@ -152,13 +166,7 @@ var d3Likert = function(element, dataObject, dimensions, sp1, cube1, mainThis){
                     .style("opacity", function(d) { 
                         // if this is the highest rated value,
                         // give it a different colour
-                        if(d.value == maxValue){
-                            // return 'rgb(252, 187, 161)';
-                            return 0.9;
-                        }else{
-                            // return "#ccc";
-                            return 0.6;
-                        }    
+                        return getDotOpacity(d.value);
                     })
                     .style("fill", function(d) {
                         return color(index);
@@ -185,39 +193,38 @@ var d3Likert = function(element, dataObject, dimensions, sp1, cube1, mainThis){
                     });
 
                 function filterDots(selectedDot) {
-                    if (dotSelected == false) {
-                        svg.selectAll("circle")
-                            .style("opacity", function(d){
-                                date = new Date(d.key);
-                                if (selectedDot.key == date) {
-                                   return 1;
-                                } else {
-                                    return 0;
-                                }
-                            });
-                            // scatter plot
-                            globalSP.selectDot(selectedDot.key);
-                            // cube
-                            globalCube.selectDot(selectedDot.key);
-                            dotSelected = true;  
-                    } else { //reset selection
-                        svg.selectAll("circle")
-                            .style("opacity", function(d){
-                                if(d.value == maxValue){
-                                    return 0.9;
-                                } else {
-                                    return 0.6;
-                                }    
-                            });
-                        //remove selection in SP
-                        globalSP.resetSelection();
-                        // remove selection in cube
-                        globalCube.resetSelection();
+                    // check if no range is selected
+                    if (allowDotSelection == true) {
+                        // check if a dot is already selected
+                        if (dotSelected == false) {
+                            svg.selectAll("circle")
+                                .style("opacity", function(d){
+                                    date = new Date(d.key);
+                                    if (selectedDot.key == date) {
+                                       return 1;
+                                    } else {
+                                        return 0.1;
+                                    }
+                                });
+                                // scatter plot
+                                globalSP.selectDot(selectedDot.key);
+                                // cube
+                                globalCube.selectDot(selectedDot.key);
+                                dotSelected = true;  
+                        } else { //reset selection
+                            svg.selectAll("circle")
+                                .style("opacity", function(d){
+                                    return getDotOpacity(d.value);
+                                });
+                            //remove selection in SP
+                            globalSP.resetSelection();
+                            // remove selection in cube
+                            globalCube.resetSelection();
 
-                        globalMainThis.filterTimeFunction(document.getElementById("slider").value);
-                        dotSelected = false;
-                    }
-
+                            // globalMainThis.filterTimeFunction(document.getElementById("slider").value);
+                            dotSelected = false;
+                        }
+                    } 
                 };
 
 
@@ -262,6 +269,36 @@ var d3Likert = function(element, dataObject, dimensions, sp1, cube1, mainThis){
         //     .style("font", "12px 'Helvetica Neue'")
         //     .call(xAxis);
 
+        function brushed() {
+            var extent = brush.extent();
+            var g = d3.select(this).node().parentNode;
+            // x.domain(brush.empty() ? x.domain() : brush.extent());
+            d3.select(g).selectAll("circle").style("opacity", function(d) {
+                //check if range is selected
+                if (+extent[0] == +extent[1]) {
+                    //no range selected: return normal opacity
+                    allowDotSelection = true;
+                    return getDotOpacity(d.value);
+                } else {
+                    allowDotSelection = false;
+                    //time range is selected with brush method
+                    var date = new Date(d.key);
+                    var time = +date;
+                    if (time >= +extent[0] && time <= +extent[1]) {
+                        //dot in time range of brush
+                        return getDotOpacity(d.value);
+                    } else {
+                        return 0.1;
+                    }
+
+                }
+            });
+
+            // filter points in other charts
+            globalCube.filterTime(+extent[0], +extent[1]);
+            globalSP.filterTime(+extent[0], +extent[1]);
+            // svg.select(".x.axis").call(xAxis);
+        }
 
         function mouseover(p) {
             var g = d3.select(this).node().parentNode;
@@ -281,24 +318,29 @@ var d3Likert = function(element, dataObject, dimensions, sp1, cube1, mainThis){
         }
     }
 
+
+
     //Filters data points according to the specified timestamp
     this.filterTime = function(value) {
         svg.selectAll("circle")
             .style("opacity", function(d){
-                date = new Date(d.key);
-                time = +date;
-                if (value < time) {return 0;}
-                else {
-                    if(d.value == maxValue){
-                            // return 'rgb(252, 187, 161)';
-                            return 0.9;
-                        }else{
-                            // return "#ccc";
-                            return 0.6;
-                        }    
-                };
+                var date = new Date(d.key);
+                var time = +date;
+                if (value < time) {
+                    return 0;
+                } else {
+                    return getDotOpacity(d.value);
+                }
             })
         dotSelected = false;
+    }
+
+    function getDotOpacity(value) {
+        if(value == maxValue){
+            return 0.9;
+        } else {
+            return 0.6;
+        }    
     }
 
 };

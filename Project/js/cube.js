@@ -2,7 +2,9 @@
 
 // define global variables
 var points;
+var pointsNonSelected;
 var mat;
+var matNonSelected;
 var matDelete;
 var scatterPlot;
 var scene;
@@ -27,57 +29,76 @@ function cube(dataObject){
     }
 
     //Filters data points according to the specified timestamp
-    this.filterTime = function(value) {
-        // remove all points
-        scatterPlot.remove(points);
-        // check which points should be shown
-        var newPointGeo = new THREE.Geometry();
+    this.filterTime = function(extent0, extent1) {
+        if(extent0 == extent1) {
+            this.resetSelection();
+        } else {
+            // remove all points
+            scatterPlot.remove(points);
+            scatterPlot.remove(pointsNonSelected);
+            // check which points should be shown
+            var newPointGeo = new THREE.Geometry();
+            var newPointGeoNonSelected = new THREE.Geometry();
             for (var i = 0; i < unfiltered.length; i ++) {
+                var x = xScale(unfiltered[i].x);
+                var y = yScale(unfiltered[i].y);
+                var z = zScale(unfiltered[i].z);
+                var type = unfiltered[i].type;  
                 // check value against timestamp
-                if(value >= unfiltered[i].y*1000) {
-                    var x = xScale(unfiltered[i].x);
-                    var y = yScale(unfiltered[i].y);
-                    var z = zScale(unfiltered[i].z);
-                    var type = unfiltered[i].type;    
-
+                if(extent0 <= unfiltered[i].y*1000 && unfiltered[i].y*1000 <= extent1) {
                     newPointGeo.vertices.push(new THREE.Vector3(x, y, z));
                     newPointGeo.colors.push(new THREE.Color(color(type)));
+                } else {
+                    newPointGeoNonSelected.vertices.push(new THREE.Vector3(x, y, z));
+                    newPointGeoNonSelected.colors.push(new THREE.Color(color(type)));
                 }
 
             }
             // add points to scatter plot
             points = new THREE.Points(newPointGeo, mat);
             scatterPlot.add(points);
+            // add non-selected points to scatter plot with less opacity
+            pointsNonSelected = new THREE.Points(newPointGeoNonSelected, matNonSelected);
+            scatterPlot.add(pointsNonSelected);
+        }
     }
 
     //method for selecting the dot from other components
     this.selectDot = function(value){
         // remove all points
         scatterPlot.remove(points);
+        scatterPlot.remove(pointsNonSelected);
         // check which points should be shown
         var newPointGeo = new THREE.Geometry();
-            for (var i = 0; i < unfiltered.length; i ++) {
-                // check value against timestamp
-                if(value == new Date(unfiltered[i].y*1000)) {
-                    var x = xScale(unfiltered[i].x);
-                    var y = yScale(unfiltered[i].y);
-                    var z = zScale(unfiltered[i].z);
-                    var type = unfiltered[i].type;    
-
-                    newPointGeo.vertices.push(new THREE.Vector3(x, y, z));
-                    newPointGeo.colors.push(new THREE.Color(color(type)));
-                }
-
+        var newPointGeoNonSelected = new THREE.Geometry();
+        for (var i = 0; i < unfiltered.length; i ++) {
+            var x = xScale(unfiltered[i].x);
+            var y = yScale(unfiltered[i].y);
+            var z = zScale(unfiltered[i].z);
+            var type = unfiltered[i].type;  
+            // check value against timestamp
+            if(value == new Date(unfiltered[i].y*1000)) {
+                newPointGeo.vertices.push(new THREE.Vector3(x, y, z));
+                newPointGeo.colors.push(new THREE.Color(color(type)));
+            } else {
+                newPointGeoNonSelected.vertices.push(new THREE.Vector3(x, y, z));
+                newPointGeoNonSelected.colors.push(new THREE.Color(color(type)));
             }
-            // add points to scatter plot
-            points = new THREE.Points(newPointGeo, mat);
-            scatterPlot.add(points);
+        }
+        // add selected points to scatter plot
+        points = new THREE.Points(newPointGeo, mat);
+        scatterPlot.add(points);
+        // add non-selected points to scatter plot with less opacity
+        pointsNonSelected = new THREE.Points(newPointGeoNonSelected, matNonSelected);
+        scatterPlot.add(pointsNonSelected);
+
     }
 
     // reset the selection (dot or time range)
     this.resetSelection = function() {
         // remove all points
         scatterPlot.remove(points);
+        scatterPlot.remove(pointsNonSelected);
 
         // check which points should be shown
         var newPointGeo = new THREE.Geometry();
@@ -452,6 +473,13 @@ function cube(dataObject){
             mat = new THREE.PointsMaterial({
                 vertexColors: true,
                 opacity: 1,
+                transparent: true,
+                size: 5
+            });
+            //material for non selected dots with less opacity
+            matNonSelected = new THREE.PointsMaterial({
+                vertexColors: true,
+                opacity: 0.1,
                 transparent: true,
                 size: 5
             });
