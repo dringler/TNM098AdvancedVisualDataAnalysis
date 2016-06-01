@@ -23,6 +23,8 @@ var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
  * initial page load
  */
 function init() {
+	var startTime = new Date().getTime();
+
 	//save standard selection
 	currentUserSelection = getUserSelection();
 
@@ -31,6 +33,9 @@ function init() {
 
 	//load sample data
 	d3.json("php/data_friday_sample.php", function (data) {
+
+		 var successTime = new Date().getTime() - startTime;
+	     console.log("Data retrieved in " + successTime + " ms");
 		//console.log("data");
 		//console.log(data);
 	//d3.csv("data/park-movement-Fri_sample_300.csv", function(error, data) {
@@ -53,6 +58,9 @@ function init() {
 		// show map based on user selection
 		showHideMap();
 
+		console.log("INITIAL PAGE LOAD DURATION IN MS:");
+		console.log(new Date().getTime() - startTime);
+
 		//Calls the filtering function 
     	// d3.select("#slider").on("input", function () {
     	// 	currentTimeFilterValue = this.value;
@@ -60,6 +68,8 @@ function init() {
     	// });
 	});
 	previousUserSelection = currentUserSelection;
+	
+
 }
 
 
@@ -79,6 +89,8 @@ function init() {
  * run the clustering algorithm
  */
 function run() {
+	var startTime = new Date().getTime();
+
 	// delete old dots in scatter plot
 	sp1.deleteCircles();
 
@@ -109,6 +121,9 @@ function run() {
         dataType: "json",
         success: function (data) {
 	        //console.log("RESULT FROM PHP QUERY RECEIVED");
+	        var successTime = new Date().getTime() - startTime;
+	        console.log("Data retrieved in " + successTime + " ms");
+	        console.log(successTime);
 	        
 	        data.forEach(function(d) {
 				d["Timestamp"] = +parseDate(d["Timestamp"])
@@ -122,6 +137,13 @@ function run() {
 			sp1.updateData(gData);
 			likert1.updateLikert(gData);
 			cube1.updateCube(gData);
+
+			console.log("CHART UPDATE DURATION IN MS FOR "+ currentUserSelection.datasetDayString + 
+		" with allIDsChecked = " + currentUserSelection.allIDsChecked +
+		" , selectedID: "+ currentUserSelection.selectedID +
+		" and with " + document.getElementById("limitID").value +
+		 " entries:");
+	console.log(new Date().getTime() - startTime);
         },
         error: function () {
             console.log("NO RESULT FROM PHP QUERY RECEIVED");
@@ -130,6 +152,8 @@ function run() {
 
 	//save user selection
 	previousUserSelection = currentUserSelection;
+
+	
 
 }
 /**
