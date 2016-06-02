@@ -32,7 +32,8 @@ function init() {
 	d3.json("php/data_friday_sample.php", function (data) {
 
 		 var successTime = new Date().getTime() - startTime;
-	     console.log("Data retrieved in " + successTime + " ms");
+	     console.log("Data retrieved in:");
+	     console.log(successTime);
 
 		data.forEach(function(d) {
 		    d["Timestamp"] = +parseDate(d["Timestamp"])
