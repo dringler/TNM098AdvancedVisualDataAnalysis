@@ -28,17 +28,11 @@ function init() {
 	//save standard selection
 	currentUserSelection = getUserSelection();
 
-	//time parsing 2013-03-25 17:59:00;
-	//var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S");
-
 	//load sample data
 	d3.json("php/data_friday_sample.php", function (data) {
 
 		 var successTime = new Date().getTime() - startTime;
 	     console.log("Data retrieved in " + successTime + " ms");
-		//console.log("data");
-		//console.log(data);
-	//d3.csv("data/park-movement-Fri_sample_300.csv", function(error, data) {
 
 		data.forEach(function(d) {
 		    d["Timestamp"] = +parseDate(d["Timestamp"])
@@ -61,29 +55,12 @@ function init() {
 		console.log("INITIAL PAGE LOAD DURATION IN MS:");
 		console.log(new Date().getTime() - startTime);
 
-		//Calls the filtering function 
-    	// d3.select("#slider").on("input", function () {
-    	// 	currentTimeFilterValue = this.value;
-    	// 	filterTimeFunction(currentTimeFilterValue);
-    	// });
 	});
 	previousUserSelection = currentUserSelection;
 	
 
 }
 
-
-// /**
-//  * run the filter time function for all charts
-//  */
-// this.filterTimeFunction = function(value) {
-// 	//update currentTimeFilterValue (might be updated from likert chart)
-// 	currentTimeFilterValue = value;
-// 	// filter time for each chart
-// 	// sp1.filterTime(value, data);
-//     // likert1.filterTime(value, data);
-//     // cube1.filterTime(value, data);
-// }
 
 /**
  * run the clustering algorithm
@@ -100,10 +77,9 @@ function run() {
     //remove cube
     document.getElementById("canvasID").remove(); // remove the whole canvas element from the DOM
 
-
 	//check if user selection changed for dataset or preprocessing
 	currentUserSelection = getUserSelection();
-
+	console.log(currentUserSelection);
 
 	// get data based on user attributes. based on:
 	// http://www.scriptscoop2.com/t/0f72a816aa4c/javascript-d3-js-how-to-pass-parameter-to-php-for-query-condition.html
@@ -115,12 +91,15 @@ function run() {
         	allIDsChecked: currentUserSelection.allIDsChecked,
         	selectedID: currentUserSelection.selectedID,
         	typeSelectionString: currentUserSelection.typeSelectionString,
-            limit: document.getElementById("limitID").value,
-            offset: document.getElementById("offsetID").value
+            limit: currentUserSelection.limit,
+            offset: currentUserSelection.offset,
+            sampling: currentUserSelection.sampling,
+            samplingRate: currentUserSelection.samplingRate
     	},
         dataType: "json",
         success: function (data) {
 	        //console.log("RESULT FROM PHP QUERY RECEIVED");
+	        console.log(data);
 	        var successTime = new Date().getTime() - startTime;
 	        console.log("Data retrieved in " + successTime + " ms");
 	        console.log(successTime);
@@ -164,30 +143,31 @@ function run() {
 function getUserSelection() {
 	//create return object
 	var userSelection = {};
-	//create variables for return object
-	// var DMa; //data mining algorithm, 0:BIRCH, 1:kMeans
-	// var DMp = []; //data mining parameters
 	//get user selection
 	//get dataset day selection
-	// var datasetDay = 0;
 	var datasetDayString ="friday";
 	var datasetSaturday = document.getElementById('daySaturdayID').checked;
 	var datasetSunday = document.getElementById('daySundayID').checked;
 	if (datasetSaturday == true) {
-	 	// datasetDay = 1;
 	 	datasetDayString = "saturday";
 	} else if (datasetSunday == true) {
-		// datasetDay = 2;
 		datasetDayString = "sunday";
 	}
+
+	// add limit and offset values
+	userSelection.limit = document.getElementById("limitID").value;
+    userSelection.offset = document.getElementById("offsetID").value;
+
+   	// get sampling values
+    userSelection.sampling = document.getElementById('samplingID').checked;
+    userSelection.samplingRate = document.getElementById('samplingRateInputID').value;
+
 	// get ID selection
 	var allIDsChecked = document.getElementById('allID').checked;
 	userSelection.allIDsChecked = allIDsChecked;
-	// console.log("allIDsChecked");
-	// console.log(allIDsChecked);
+
 
 	var selectedID = 0;
-
 	//get selected ID if single ID is selected
 	if (allIDsChecked == false) {
 		//http://stackoverflow.com/questions/1085801/get-selected-value-in-dropdown-list-using-javascript
@@ -196,11 +176,8 @@ function getUserSelection() {
 		
 	}
 	userSelection.selectedID = selectedID;
-	// console.log("selectedID");
-	// console.log(selectedID);
 
 	//get type selection
-	// var typeSelection = 0;
 	var typeSelectionString = "";
 	if (document.getElementById("checkInID").checked) {
 		typeSelectionString = "check-in";
@@ -214,29 +191,26 @@ function getUserSelection() {
 	// var applyBirch = document.getElementById('birchID').checked;
 	// var areaYparameter = document.getElementById('areaYvalueID').value;
 
-	//get specific parameters of the DM algorithm
-	//BIRCH
-	// if (applyBirch) {
-	// 	DMa = 0;
-	// 	var threshold = document.getElementById('birchThID').value;
-	// 	var branching_factor = document.getElementById('birchBfID').value;
-	// 	var n_clusters = ""; //document.getElementById('birchNcID').value;
-	// 	DMp.push(threshold, branching_factor, n_clusters);
-	// } else { //KMeans
-	// 	DMa = 1;
-	// 	var k = document.getElementById('kInputID').value;
-	// 	DMp.push(k);
-	// }
+
 	
 	//save user selection in return object
-	// userSelection.datasetDay = datasetDay;
+
 	userSelection.datasetDayString = datasetDayString;
-	// userSelection.normalizeDataset = normalizeDataset;
-	// userSelection.areaYparameter = areaYparameter;
-	// userSelection.DMa = DMa;
-	// userSelection.DMp = DMp;
 
 	return userSelection;
+}
+
+/**
+ * show or hide input field for sampling rate
+ */
+function samplingClick() {
+	var samplingChecked = document.getElementById('samplingID').checked;
+	if (samplingChecked == true) {
+		document.getElementById('samplingRateID').style.display = "block";
+
+	} else {
+		document.getElementById('samplingRateID').style.display = "none";
+	}
 }
 
 /**
